@@ -1,0 +1,30 @@
+{
+  "name": "@branding-review/pptx-parser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deterministic multimodal PPTX parser — converts PowerPoint files to structured JSON without AI",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "parse": "node dist/index.js"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.4.0",
+    "jszip": "^3.10.1",
+    "sharp": "^0.33.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "typescript": "^5.4.0"
+  },
+  "optionalDependencies": {
+    "winax": "^3.2.5"
+  }
+}

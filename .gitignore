@@ -1,0 +1,29 @@
+# Generated reports — exclude specific review outputs; keep .gitkeep
+reports/*.md
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+
+# Source files uploaded for review (PowerPoint, Word, PDF, etc.)
+*.pptx
+*.ppt
+*.docx
+*.doc
+*.pdf
+
+# Temporary / log files
+*.log
+*.tmp
+*.bak
+
+
+node_modules/
+dist/
