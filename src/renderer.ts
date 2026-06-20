@@ -23,7 +23,7 @@ export async function renderSlides(
   // Dynamic import — winax is optional; don't let a missing module crash the parser
   let winax: { Object: new (progId: string) => unknown };
   try {
-    // @ts-expect-error winax has no type declarations
+    // @ts-ignore — winax is an optional native dependency without types
     winax = (await import('winax')) as typeof winax;
   } catch {
     return result; // not installed or failed to compile — skip rendering
