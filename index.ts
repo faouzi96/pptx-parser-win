@@ -1,14 +1,14 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 
-import { loadPptx } from './src/loader.js';
-import { parseManifest } from './src/manifest.js';
-import { parseSlide } from './src/slide-parser.js';
-import { writeMediaFiles, ExtractedImage } from './src/image-extractor.js';
-import { renderSlides } from './src/renderer.js';
-import { writePresentation } from './src/normalizer.js';
-import { Presentation, Slide } from './src/types.js';
-import { fileURLToPath } from 'url';
+import { loadPptx } from "./src/loader.js";
+import { parseManifest } from "./src/manifest.js";
+import { parseSlide } from "./src/slide-parser.js";
+import { writeMediaFiles, ExtractedImage } from "./src/image-extractor.js";
+import { renderSlides } from "./src/renderer.js";
+import { writePresentation } from "./src/normalizer.js";
+import { Presentation, Slide } from "./src/types.js";
+import { fileURLToPath } from "url";
 
 // Re-export all public types so consumers can import them from this module
 export type {
@@ -21,7 +21,7 @@ export type {
   ChartElement,
   Bounds,
   SlideImage,
-} from './src/types.js';
+} from "./src/types.js";
 
 /**
  * Parse a .pptx file into a structured Presentation object.
@@ -35,11 +35,14 @@ export type {
  * @param outputDir Directory to write output files into (created if missing)
  * @returns         The parsed Presentation object
  */
-export async function parsePptx(pptxPathArg: string, outputDirArg?: string): Promise<Presentation> {
-
-  const pptxPath=path.normalize(pptxPathArg); 
-  const outputPath=outputDirArg ? path.normalize(outputDirArg) : process.cwd();
-
+export async function parsePptx(
+  pptxPathArg: string,
+  outputDirArg?: string,
+): Promise<Presentation> {
+  const pptxPath = path.normalize(pptxPathArg);
+  const outputPath = outputDirArg
+    ? path.normalize(outputDirArg)
+    : process.cwd();
 
   const absPath = path.resolve(pptxPath);
   if (!fs.existsSync(absPath)) {
@@ -67,7 +70,7 @@ export async function parsePptx(pptxPathArg: string, outputDirArg?: string): Pro
   }
 
   // 4. Write extracted media files to outputDir/media/
-  writeMediaFiles(allExtractedImages, archive, path.join(outputPath, 'media'));
+  writeMediaFiles(allExtractedImages, archive, path.join(outputPath, "media"));
 
   // 5. Attempt full-slide rendering via PowerPoint COM (optional, Windows + PPT only)
   const renders = await renderSlides(absPath, outputPath);
@@ -96,18 +99,26 @@ if (isMain) {
   const [, , pptxArg, outputArg] = process.argv;
 
   if (!pptxArg) {
-    process.stderr.write('Usage: node dist/index.js <pptx-path> [OPTIONAL]<output-dir>\n');
+    process.stderr.write(
+      "Usage: node dist/index.js <pptx-path> [OPTIONAL]<output-dir>\n",
+    );
     process.exit(1);
   }
 
   parsePptx(pptxArg, outputArg)
     .then((presentation) => {
       process.stdout.write(
-        JSON.stringify({ success: true, slideCount: presentation.slides.length, outputDir: outputArg }) + '\n',
+        JSON.stringify({
+          success: true,
+          slideCount: presentation.slides.length,
+          outputDir: outputArg,
+        }) + "\n",
       );
     })
     .catch((err: Error) => {
-      process.stderr.write(JSON.stringify({ success: false, error: err.message }) + '\n');
+      process.stderr.write(
+        JSON.stringify({ success: false, error: err.message }) + "\n",
+      );
       process.exit(1);
     });
 }
