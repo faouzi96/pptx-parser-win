@@ -8,7 +8,6 @@ import { writeMediaFiles, ExtractedImage } from "./image-extractor.js";
 import { renderSlides } from "./renderer.js";
 import { writePresentation } from "./normalizer.js";
 import { Presentation, Slide } from "./types.js";
-import { fileURLToPath } from "url";
 
 // Re-export all public types so consumers can import them from this module
 export type {
