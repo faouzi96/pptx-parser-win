@@ -1,17 +1,49 @@
 {
-  "name": "@branding-review/pptx-parser",
+  "name": "pptx-parser-win",
   "version": "1.0.0",
-  "private": true,
   "description": "Deterministic multimodal PPTX parser — converts PowerPoint files to structured JSON without AI",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "bin": {
+    "pptx-parser": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/faouzi96/pptx-parser-win.git"
+  },
+  "keywords": [
+    "pptx",
+    "powerpoint",
+    "presentation",
+    "parser",
+    "pptx-parser",
+    "extractor"
+  ],
+  "license": "MIT",
+  "author": "Branding Review <support@branding-review.com>",
+  "homepage": "https://github.com/faouzi96/pptx-parser-win#readme",
+  "bugs": {
+    "url": "https://github.com/faouzi96/pptx-parser-win/issues"
+  },
   "scripts": {
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "prebuild": "npm run clean",
     "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
     "build:watch": "tsc --watch",
-    "parse": "node dist/index.js"
+    "parse": "npm run build && node dist/index.js"
   },
   "dependencies": {
     "fast-xml-parser": "^4.4.0",
