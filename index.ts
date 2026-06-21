@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { fileURLToPath } from 'url';
 import { parsePptx } from './src/pptxParse.js';
 export { parsePptx };

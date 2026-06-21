@@ -1,5 +1,5 @@
 {
-  "name": "pptx-parser-win",
+  "name": "@fz-labs/pptx-parser-win",
   "version": "1.0.0",
   "description": "Deterministic multimodal PPTX parser — converts PowerPoint files to structured JSON without AI",
   "type": "module",

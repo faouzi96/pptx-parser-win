@@ -1,4 +1,4 @@
-# pptx-parser-win
+# @fz-labs/pptx-parser-win
 
 Deterministic multimodal PPTX parser that converts PowerPoint files to structured JSON without AI.
 
@@ -9,13 +9,13 @@ Repository: https://github.com/faouzi96/pptx-parser-win
 Install:
 
 ```bash
-npm install pptx-parser-win
+npm install @fz-labs/pptx-parser-win
 ```
 
 Use as a library:
 
 ```ts
-import { parsePptx } from '@branding-review/pptx-parser';
+import { parsePptx } from '@fz-labs/pptx-parser-win';
 
 const presentation = await parsePptx('presentation.pptx', './output');
 // or explicitly control image output:

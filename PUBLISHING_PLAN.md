@@ -1,4 +1,4 @@
-# Publishing Plan for `@branding-review/pptx-parser`
+# Publishing Plan for `@fz-labs/pptx-parser-win`
 
 Repository: https://github.com/faouzi96/pptx-parser-win
 
@@ -80,7 +80,7 @@ gh workflow run publish.yml
 - The same root entrypoint supports both imports and CLI execution.
 - Consumers can do:
   ```ts
-  import { parsePptx } from '@branding-review/pptx-parser';
+  import { parsePptx } from '@fz-labs/pptx-parser-win';
   ```
 - CLI users can do:
   ```bash
