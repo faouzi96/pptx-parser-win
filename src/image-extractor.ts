@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { ImageElement } from "./types.js";
+import { ImageElement, OutputType } from "./types.js";
 import { parseBounds } from "./utils.js";
 import { PptxArchive } from "./loader.js";
 
@@ -27,13 +27,16 @@ export interface ExtractedImage {
 
 /**
  * Extract ImageElement[] from <p:pic> nodes.
- * @param picNodes  Array of <p:pic> XML nodes from a slide's spTree
- * @param rels      Map of rId → resolved ZIP path for this slide
+ * @param picNodes   Array of <p:pic> XML nodes from a slide's spTree
+ * @param rels       Map of rId → resolved ZIP path for this slide
+ * @param archive    The PPTX ZIP archive
+ * @param outputType Output behavior mode
  */
 export function extractImageElements(
   picNodes: unknown[],
   rels: Map<string, string>,
   archive: PptxArchive,
+  outputType: OutputType = 'JSON_AND_MEDIA',
 ): ExtractedImage[] {
   const results: ExtractedImage[] = [];
 
@@ -49,8 +52,6 @@ export function extractImageElements(
     const buf = archive.media.get(srcZipPath);
     if (!buf) continue;
 
-    const base64 = buf.toString("base64");
-
     const ext = path.extname(srcZipPath).toLowerCase();
     const mime = MIME_MAP[ext] ?? "application/octet-stream";
     const filename = path.basename(srcZipPath);
@@ -61,16 +62,22 @@ export function extractImageElements(
       ? parseBounds(xfrm)
       : { x: 0, y: 0, width: 0, height: 0 };
 
+    const element: ImageElement = {
+      id: `el-${uuidv4()}`,
+      type: "image",
+      mime,
+      bounds,
+      order: 0,
+    };
+
+    if (outputType === 'JSON_AND_MEDIA') {
+      element.path = `./media/${filename}`;
+    } else {
+      element.base64 = buf.toString("base64");
+    }
+
     results.push({
-      element: {
-        id: `el-${uuidv4()}`,
-        type: "image",
-        mime,
-        path: `./media/${filename}`,
-        base64,
-        bounds,
-        order: 0,
-      },
+      element,
       srcZipPath,
     });
   }
@@ -91,7 +98,7 @@ export function writeMediaFiles(
 
   for (const { srcZipPath, element } of extracted) {
     const buf = archive.media.get(srcZipPath);
-    if (buf) {
+    if (buf && element.path) {
       const filename = path.basename(element.path);
       fs.writeFileSync(path.join(outputMediaDir, filename), buf);
     }

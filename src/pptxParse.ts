@@ -7,7 +7,7 @@ import { parseSlide } from "./slide-parser.js";
 import { writeMediaFiles, ExtractedImage } from "./image-extractor.js";
 import { renderSlides } from "./renderer.js";
 import { writePresentation } from "./normalizer.js";
-import { Presentation, Slide } from "./types.js";
+import { Presentation, Slide, OutputType } from "./types.js";
 
 // Re-export all public types so consumers can import them from this module
 export type {
@@ -20,25 +20,26 @@ export type {
   ChartElement,
   Bounds,
   SlideImage,
+  OutputType,
 } from "./types.js";
 
 /**
  * Parse a .pptx file into a structured Presentation object.
  *
- * Side effects (all written to outputDir):
- *   outputDir/media/         — extracted embedded images
- *   outputDir/renders/       — full-slide PNG renders (only if PowerPoint is available)
- *   outputDir/presentation.json — the final normalized output
+ * Side effects (written to outputDir or current directory):
+ *   - 'JSON_AND_MEDIA' mode: writes outputDir/media/, outputDir/renders/ and outputDir/presentation.json
+ *   - 'JSON_EMBEDDED' mode: writes outputDir/presentation.json only
+ *   - 'NONE' mode: writes no files to disk
  *
- * @param pptxPath  Absolute or relative path to the .pptx file
- * @param outputDir Directory to write output files into (created if missing)
- * @param with_img_output  Whether to write extracted image output and presentation JSON. Defaults to true.
- * @returns         The parsed Presentation object
+ * @param pptxPathArg  Absolute or relative path to the .pptx file
+ * @param outputDirArg Optional directory to write output files into (defaults to process.cwd())
+ * @param outputType   Output behavior mode: 'JSON_AND_MEDIA' (default), 'JSON_EMBEDDED', or 'NONE'.
+ * @returns            The parsed Presentation object
  */
 export async function parsePptx(
   pptxPathArg: string,
   outputDirArg?: string,
-  with_img_output = true,
+  outputType: OutputType = 'JSON_AND_MEDIA',
 ): Promise<Presentation> {
   const pptxPath = path.normalize(pptxPathArg);
   const outputPath = outputDirArg
@@ -65,19 +66,24 @@ export async function parsePptx(
       archive,
       manifest.slidePaths[i],
       i + 1,
+      outputType,
     );
     slides.push(slide);
     allExtractedImages.push(...extractedImages);
   }
 
   // 4. Write extracted media files to outputDir/media/
-  writeMediaFiles(allExtractedImages, archive, path.join(outputPath, "media"));
+  if (outputType === 'JSON_AND_MEDIA') {
+    writeMediaFiles(allExtractedImages, archive, path.join(outputPath, "media"));
+  }
 
   // 5. Attempt full-slide rendering via PowerPoint COM (optional, Windows + PPT only)
-  const renders = await renderSlides(absPath, outputPath);
-  for (const slide of slides) {
-    const render = renders.get(slide.slideNumber);
-    if (render) slide.fullSlideImage = render;
+  if (outputType === 'JSON_AND_MEDIA') {
+    const renders = await renderSlides(absPath, outputPath);
+    for (const slide of slides) {
+      const render = renders.get(slide.slideNumber);
+      if (render) slide.fullSlideImage = render;
+    }
   }
 
   // 6. Assemble and write the final JSON
@@ -85,7 +91,7 @@ export async function parsePptx(
     title: manifest.presentationTitle,
     slides,
   };
-  if (with_img_output) {
+  if (outputType !== 'NONE') {
     writePresentation(presentation, outputPath);
   }
 

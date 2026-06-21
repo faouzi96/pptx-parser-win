@@ -4,7 +4,7 @@ import { PptxArchive } from './loader.js';
 import { extractTextElements, extractTitle } from './text-extractor.js';
 import { extractImageElements, ExtractedImage } from './image-extractor.js';
 import { extractTableElements } from './table-extractor.js';
-import { Slide, SlideElement, ChartElement } from './types.js';
+import { Slide, SlideElement, ChartElement, OutputType } from './types.js';
 import { parseBounds, extractTextFromTxBody } from './utils.js';
 
 const CHART_URI = 'http://schemas.openxmlformats.org/drawingml/2006/chart';
@@ -171,6 +171,7 @@ export function parseSlide(
   archive: PptxArchive,
   slidePath: string,
   slideNumber: number,
+  outputType: OutputType = 'JSON_AND_MEDIA',
 ): ParsedSlide {
   const slideXml = archive.files.get(slidePath);
   if (!slideXml) {
@@ -193,7 +194,7 @@ export function parseSlide(
 
   // Extract all element types
   const textElements = extractTextElements(spNodes);
-  const extractedImages = extractImageElements(picNodes, rels, archive);
+  const extractedImages = extractImageElements(picNodes, rels, archive, outputType);
   const tableElements = extractTableElements(frameNodes);
   const chartElements = extractChartElements(frameNodes);
 

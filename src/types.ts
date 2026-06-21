@@ -25,8 +25,8 @@ export interface ImageElement {
   /** MIME type, e.g. 'image/png' */
   mime: string;
   /** Path relative to outputDir, e.g. './media/image1.png' */
-  path: string;
-  base64: string;
+  path?: string;
+  base64?: string;
   bounds: Bounds;
   order: number;
 }
@@ -71,4 +71,4 @@ export interface Presentation {
   slides: Slide[];
 }
 
-export type OuputType = "JSON" | "FILES"
+export type OutputType = 'JSON_AND_MEDIA' | 'JSON_EMBEDDED' | 'NONE';
